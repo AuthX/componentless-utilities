@@ -1,0 +1,134 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.authentic</groupId>
+	<artifactId>authentic-componentless-utilities</artifactId>
+	<version>2.4.4</version>
+	<name>authentic componentless utilities</name>
+	<description>Extends the beanless capability with components that can handle many scenarios without writing any code, as well as providing some utilities for the frontend to use.</description>
+
+
+	<properties>
+		<hst.version>5.0.2</hst.version>
+		<hippo.version>4.0.0</hippo.version>
+	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>authxlab-nexus</id>
+			<url>http://nexus.authxlab.com/repository/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>authxlab-nexus</id>
+			<url>http://nexus.authxlab.com/repository/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>hippo</id>
+			<name>Hippo maven 2 repository.</name>
+			<url>https://maven.onehippo.com/maven2/</url>
+		</repository>
+
+		<repository>
+			<id>hippo-maven2-enterprise</id>
+			<name>Hippo Enterprise Maven 2</name>
+			<url>https://maven.onehippo.com/maven2-enterprise</url>
+			<releases>
+				<updatePolicy>never</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</releases>
+		</repository>
+	</repositories>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>javax.jcr</groupId>
+			<artifactId>jcr</artifactId>
+			<version>2.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.onehippo.cms7.hst</groupId>
+			<artifactId>hst-api</artifactId>
+			<version>${hst.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.onehippo.cms7.hst</groupId>
+			<artifactId>hst-commons</artifactId>
+			<version>${hst.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.onehippo.cms7</groupId>
+			<artifactId>hippo-cms7-commons</artifactId>
+			<version>${hippo.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.onehippo.cms7.hst</groupId>
+			<artifactId>hst-client</artifactId>
+			<version>${hst.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.onehippo.cms7.hst.components</groupId>
+			<artifactId>hst-core</artifactId>
+			<version>${hst.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.onehippo.cms7</groupId>
+			<artifactId>hippo-essentials-components-hst</artifactId>
+			<version>${hippo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.onehippo.cms7</groupId>
+			<artifactId>hippo-plugin-selections-hst-client</artifactId>
+			<version>${hst.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.6</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>2.3.24-incubating</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.4</version>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>

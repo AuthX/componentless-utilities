@@ -1,6 +1,8 @@
 package com.authentic.components;
 
 import com.google.common.base.Strings;
+import org.hippoecm.hst.content.beans.ObjectBeanManagerException;
+import org.hippoecm.hst.content.beans.manager.ObjectBeanManager;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
@@ -9,6 +11,12 @@ import org.hippoecm.hst.core.parameters.Parameter;
 import org.hippoecm.hst.core.parameters.ParametersInfo;
 import org.hippoecm.hst.core.request.HstRequestContext;
 import org.onehippo.cms7.essentials.components.CommonComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static com.authentic.util.Constants.COMPONENT_PARAMETER_MAP;
 
@@ -18,6 +26,8 @@ import static com.authentic.util.Constants.COMPONENT_PARAMETER_MAP;
  */
 @ParametersInfo(type=DocumentContentComponent.Info.class)
 public class DocumentContentComponent extends CommonComponent {
+    private static final Logger log = LoggerFactory.getLogger(DocumentContentComponent.class);
+
     /**
      * @param request HstRequest
      * @param response
@@ -35,6 +45,7 @@ public class DocumentContentComponent extends CommonComponent {
         final HippoBean root = context.getSiteContentBaseBean();
         HippoBean bean;
 
+        assignDocumentBeans(request, root);
         if (!Strings.isNullOrEmpty(paramDocumentPath)) {
             bean = root.getBean(paramDocumentPath);
         } else {
@@ -47,6 +58,41 @@ public class DocumentContentComponent extends CommonComponent {
 
         request.setAttribute(REQUEST_ATTR_DOCUMENT, bean);
         request.setAttribute(REQUEST_ATTR_PARAM_INFO, request.getAttribute(COMPONENT_PARAMETER_MAP));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void assignDocumentBeans(HstRequest request, HippoBean root) {
+        final ObjectBeanManager beanManager = request.getRequestContext().getObjectBeanManager();
+        final HashMap<String, Object> paramMap;
+        Set<Map.Entry<String, Object>> paramSet;
+        try {
+            paramMap = (HashMap<String, Object>) request.getAttribute(COMPONENT_PARAMETER_MAP);
+            paramSet = paramMap.entrySet();
+            paramSet.stream()
+                    .filter(e -> !e.getKey().equals(REQUEST_ATTR_DOCUMENT)
+                            && e.getKey().endsWith("Document")
+                            && isDocumentPath(e.getValue()))
+                    .forEach(e -> request.setAttribute(e.getKey(), getBeanFromPath((String) e.getValue(), beanManager, root)));
+        } catch (ClassCastException e) {
+            log.error("cparam is not a parameter map. This should not happen.", e);
+        }
+    }
+
+    private Object getBeanFromPath(String value, ObjectBeanManager beanManager, HippoBean root) {
+        if (value.startsWith("/content")) { // Beans may start with /content or may not
+            try {
+                return beanManager.getObject(value);
+            } catch (ObjectBeanManagerException e) {
+                log.error("Error getting bean from path {}", value, e);
+                return null;
+            }
+        }
+        else
+            return root.getBean(value);
+    }
+
+    private boolean isDocumentPath(Object value) {
+        return value instanceof String && !Strings.isNullOrEmpty((String) value);
     }
 
     interface Info {

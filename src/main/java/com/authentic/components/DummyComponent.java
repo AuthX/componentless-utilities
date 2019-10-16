@@ -17,6 +17,9 @@ public class DummyComponent extends BaseHstComponent {
     public void doBeforeRender(HstRequest request, HstResponse response) {
         super.doBeforeRender(request, response);
         getComponentParametersInfo(request);
-        request.setAttribute(REQUEST_ATTR_PARAM_INFO, request.getAttribute(COMPONENT_PARAMETER_MAP));
+
+        Object paramMap = request.getAttribute(COMPONENT_PARAMETER_MAP);
+        request.setAttribute(REQUEST_ATTR_PARAM_INFO, paramMap);
+        request.setModel(REQUEST_ATTR_PARAM_INFO, paramMap);
     }
 }

@@ -11,7 +11,9 @@ import org.hippoecm.hst.core.request.HstRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.authentic.util.Constants.COMPONENT_PARAMETER_MAP;
 import static com.authentic.util.Constants.REQUEST_ATTR_DOCUMENT;
+import static com.authentic.util.Constants.REQUEST_ATTR_PARAM_INFO;
 
 /**
  * Extends the ListContentComponent to allow comparison queries against a document
@@ -56,7 +58,11 @@ public class RelatedListContentComponent extends ListContentComponent {
         else
             query.setFilter(baseFilter);
 
+        Object paramMap = request.getAttribute(COMPONENT_PARAMETER_MAP);
         request.setAttribute(REQUEST_ATTR_DOCUMENT, contentBean);
+        request.setModel(REQUEST_ATTR_DOCUMENT, contentBean);
+        request.setAttribute(REQUEST_ATTR_PARAM_INFO, paramMap);
+        request.setModel(REQUEST_ATTR_PARAM_INFO, paramMap);
     }
 
     private void excludeCurrentDocument(HstQuery query, Filter baseFilter, HippoBean contentBean) {

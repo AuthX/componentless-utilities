@@ -64,8 +64,12 @@ public class ListContentComponent extends BaseHstComponent {
         if (pagination != null) {
             request.setAttribute(REQUEST_ATTR_DOCUMENTS, pagination.getItems());
             request.setAttribute(REQUEST_ATTR_PAGEABLE, pagination);
+            request.setModel(REQUEST_ATTR_PAGEABLE, pagination);
         }
-        request.setAttribute(REQUEST_ATTR_PARAM_INFO, request.getAttribute(COMPONENT_PARAMETER_MAP));
+
+        Object paramMap = request.getAttribute(COMPONENT_PARAMETER_MAP);
+        request.setAttribute(REQUEST_ATTR_PARAM_INFO, paramMap);
+        request.setModel(REQUEST_ATTR_PARAM_INFO, paramMap);
     }
 
     @Nullable

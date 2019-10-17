@@ -56,11 +56,8 @@ public class DocumentContentComponent extends CommonComponent {
             pageNotFound(response);
         }
 
-        Object paramMap = request.getAttribute(COMPONENT_PARAMETER_MAP);
         request.setAttribute(REQUEST_ATTR_DOCUMENT, bean);
         request.setModel(REQUEST_ATTR_DOCUMENT, bean);
-        request.setAttribute(REQUEST_ATTR_PARAM_INFO, paramMap);
-        request.setModel(REQUEST_ATTR_PARAM_INFO, paramMap);
     }
 
     @SuppressWarnings("unchecked")

@@ -58,11 +58,8 @@ public class RelatedListContentComponent extends ListContentComponent {
         else
             query.setFilter(baseFilter);
 
-        Object paramMap = request.getAttribute(COMPONENT_PARAMETER_MAP);
         request.setAttribute(REQUEST_ATTR_DOCUMENT, contentBean);
         request.setModel(REQUEST_ATTR_DOCUMENT, contentBean);
-        request.setAttribute(REQUEST_ATTR_PARAM_INFO, paramMap);
-        request.setModel(REQUEST_ATTR_PARAM_INFO, paramMap);
     }
 
     private void excludeCurrentDocument(HstQuery query, Filter baseFilter, HippoBean contentBean) {

@@ -72,7 +72,10 @@ public class DocumentContentComponent extends CommonComponent {
                     .filter(e -> !e.getKey().equals(REQUEST_ATTR_DOCUMENT)
                             && e.getKey().endsWith("Document")
                             && isDocumentPath(e.getValue()))
-                    .forEach(e -> request.setAttribute(e.getKey(), getBeanFromPath((String) e.getValue(), beanManager, root)));
+                    .forEach(e -> {
+                        request.setModel(e.getKey(), getBeanFromPath((String) e.getValue(), beanManager, root));
+                        request.setAttribute(e.getKey(), getBeanFromPath((String) e.getValue(), beanManager, root));
+                    });
         } catch (ClassCastException e) {
             log.error("cparam is not a parameter map. This should not happen.", e);
         }

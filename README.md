@@ -110,6 +110,7 @@ Utilizes the following configuration parameters:
 * _pageNumberParam_ - Optional - The name of the request parameter to use for pagination. If this is empty, the user will not be able to change what page they are looking at. For example, if the value of this is "page" (the default) then we will look for "?page=X" on the request.
 * _nodeTypes_ - Optional - A comma-separated list of document types that we are looking for. If this is not set, we will create a list of ALL document types. If this is set to, for example, "brxp:Article,brxp:BlogArticle" we will create a list of ONLY BlogArticle and Article doctypes.
 * _filterParams_ - Optional - A JCR query to use.
+* _documentX_ - Optional - If no path is specified, the component will look for numbered document parameters and build them into an array of documents if they exist.
 
 **filterParams**
 

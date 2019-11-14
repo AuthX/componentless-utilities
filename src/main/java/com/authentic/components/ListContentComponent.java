@@ -3,6 +3,7 @@ package com.authentic.components;
 import com.authentic.util.QueryHelper;
 import com.google.common.base.Strings;
 import org.hippoecm.hst.component.support.bean.BaseHstComponent;
+import org.hippoecm.hst.content.beans.manager.ObjectBeanManager;
 import org.hippoecm.hst.content.beans.query.HstQuery;
 import org.hippoecm.hst.content.beans.query.exceptions.QueryException;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
@@ -17,11 +18,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.authentic.util.Constants.COMPONENT_PARAMETER_MAP;
 import static com.authentic.util.Constants.REQUEST_ATTR_DOCUMENTS;
 import static com.authentic.util.Constants.REQUEST_ATTR_PAGEABLE;
-import static com.authentic.util.Constants.REQUEST_ATTR_PARAM_INFO;
+import static com.authentic.util.QueryHelper.getBeanFromPath;
 
 /**
  * A generic class which serves as the functional part for any component that is
@@ -48,7 +54,7 @@ public class ListContentComponent extends BaseHstComponent {
         final HstRequestContext context = request.getRequestContext();
         final HippoBean root = context.getSiteContentBaseBean();
 
-        IterablePagination<HippoBean> pagination = null;
+        IterablePagination<HippoBean> pagination ;
         final QueryHelper helper = new QueryHelper(request, this, paramInfo);
 
         HippoBean scope;
@@ -58,14 +64,43 @@ public class ListContentComponent extends BaseHstComponent {
         } else {
             scope = getScopeFromContentPath(context, root);
         }
+
         if (scope != null)
             pagination = getBeansFromQuery(paramInfo, helper, request, context, scope);
+        else
+            pagination = getBeansFromParamInfo(helper, request, root, context);
 
         if (pagination != null) {
             request.setAttribute(REQUEST_ATTR_DOCUMENTS, pagination.getItems());
             request.setAttribute(REQUEST_ATTR_PAGEABLE, pagination);
-            request.setModel(REQUEST_ATTR_PAGEABLE, pagination);
+            request.setModel(REQUEST_ATTR_DOCUMENTS, pagination.getItems());
         }
+    }
+
+    private IterablePagination<HippoBean> getBeansFromParamInfo(QueryHelper helper, HstRequest request, HippoBean root, HstRequestContext context) {
+        final ObjectBeanManager beanManager =  context.getObjectBeanManager();
+        final HashMap<String, Object> paramMap;
+        Set<Map.Entry<String, Object>> paramSet;
+        try {
+            List<HippoBean> beans = new ArrayList<>();
+            paramMap = (HashMap<String, Object>) request.getAttribute(COMPONENT_PARAMETER_MAP);
+            paramSet = paramMap.entrySet();
+            paramSet.stream()
+                    .filter(e -> e.getKey().matches("document[0-9?]")
+                            && isDocumentPath(e.getValue()))
+                    .forEach(e -> {
+                        HippoBean bean = getBeanFromPath((String) e.getValue(), beanManager, root);
+                        if (bean != null)
+                            beans.add(bean);
+                    });
+
+            return helper.buildPageable(beans);
+
+        } catch (ClassCastException e) {
+            log.error("cparam is not a parameter map. This should not happen.", e);
+        }
+
+        return null;
     }
 
     @Nullable
@@ -118,6 +153,10 @@ public class ListContentComponent extends BaseHstComponent {
             log.debug("Failed to get beans from a content path", e);
             return null;
         }
+    }
+
+    private boolean isDocumentPath(Object value) {
+        return value instanceof String && !Strings.isNullOrEmpty((String) value);
     }
 
     protected void modifyQuery(HstQuery query, HstRequest request) {

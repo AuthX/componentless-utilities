@@ -3,6 +3,8 @@ package com.authentic.util;
 import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.component.support.bean.BaseHstComponent;
 import org.hippoecm.hst.container.RequestContextProvider;
+import org.hippoecm.hst.content.beans.ObjectBeanManagerException;
+import org.hippoecm.hst.content.beans.manager.ObjectBeanManager;
 import org.hippoecm.hst.content.beans.query.HstQuery;
 import org.hippoecm.hst.content.beans.query.HstQueryResult;
 import org.hippoecm.hst.content.beans.query.exceptions.QueryException;
@@ -72,6 +74,22 @@ public class QueryHelper {
     
     public static QueryHelper query() {
         return new QueryHelper();
+    }
+
+    public static HippoBean getBeanFromPath(String value, ObjectBeanManager beanManager, HippoBean root) {
+        if (value.startsWith("/content")) { // Beans may start with /content or may not
+            try {
+                return (HippoBean) beanManager.getObject(value);
+            } catch (ObjectBeanManagerException e) {
+                log.error("Error getting bean from path {}", value, e);
+            } catch (ClassCastException e) {
+                log.error("While attempting to get a bean from path {}, got something else", value, e);
+            }
+
+            return null;
+        }
+        else
+            return root.getBean(value);
     }
 
     private String parseOrder(HstRequest request, BaseHstComponent component, Info info) {

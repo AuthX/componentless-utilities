@@ -1,7 +1,6 @@
 package com.authentic.components;
 
 import com.google.common.base.Strings;
-import org.hippoecm.hst.content.beans.ObjectBeanManagerException;
 import org.hippoecm.hst.content.beans.manager.ObjectBeanManager;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstRequest;
@@ -19,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.authentic.util.Constants.COMPONENT_PARAMETER_MAP;
+import static com.authentic.util.QueryHelper.getBeanFromPath;
 
 /**
  * A generic class which serves as the functional part for any component that is
@@ -73,25 +73,15 @@ public class DocumentContentComponent extends CommonComponent {
                             && e.getKey().endsWith("Document")
                             && isDocumentPath(e.getValue()))
                     .forEach(e -> {
-                        request.setModel(e.getKey(), getBeanFromPath((String) e.getValue(), beanManager, root));
-                        request.setAttribute(e.getKey(), getBeanFromPath((String) e.getValue(), beanManager, root));
+                        HippoBean bean = getBeanFromPath((String) e.getValue(), beanManager, root);
+                        if (bean != null) {
+                            request.setModel(e.getKey(), bean);
+                            request.setAttribute(e.getKey(), bean);
+                        }
                     });
         } catch (ClassCastException e) {
             log.error("cparam is not a parameter map. This should not happen.", e);
         }
-    }
-
-    private Object getBeanFromPath(String value, ObjectBeanManager beanManager, HippoBean root) {
-        if (value.startsWith("/content")) { // Beans may start with /content or may not
-            try {
-                return beanManager.getObject(value);
-            } catch (ObjectBeanManagerException e) {
-                log.error("Error getting bean from path {}", value, e);
-                return null;
-            }
-        }
-        else
-            return root.getBean(value);
     }
 
     private boolean isDocumentPath(Object value) {

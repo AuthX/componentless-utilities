@@ -1,6 +1,8 @@
 package com.authentic.components;
 
 import com.authentic.util.QueryHelper;
+import com.authentic.util.ResourceBundleUtility;
+import com.authentic.util.ValueListUtility;
 import com.google.common.base.Strings;
 import org.hippoecm.hst.component.support.bean.BaseHstComponent;
 import org.hippoecm.hst.content.beans.manager.ObjectBeanManager;
@@ -75,6 +77,9 @@ public class ListContentComponent extends BaseHstComponent {
             request.setAttribute(REQUEST_ATTR_PAGEABLE, pagination);
             request.setModel(REQUEST_ATTR_DOCUMENTS, pagination.getItems());
         }
+
+        ValueListUtility.addValueListsToModel(request, paramInfo);
+        ResourceBundleUtility.addResourceBundlesToModel(request, paramInfo);
     }
 
     private IterablePagination<HippoBean> getBeansFromParamInfo(QueryHelper helper, HstRequest request, HippoBean root, HstRequestContext context) {
@@ -163,7 +168,7 @@ public class ListContentComponent extends BaseHstComponent {
         // For implementation by child classes
     }
 
-    interface Info extends QueryHelper.Info {
+    interface Info extends QueryHelper.Info, ResourceBundleUtility.Info, ValueListUtility.Info {
         /**
          * Allows a contributor to assign a path in the /content. If this parameter is set,
          * we will query that path for documents and turn them into a list assigned to the

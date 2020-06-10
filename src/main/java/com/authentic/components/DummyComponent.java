@@ -5,12 +5,7 @@ import com.authentic.util.ValueListUtility;
 import org.hippoecm.hst.component.support.bean.BaseHstComponent;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
-import org.hippoecm.hst.core.parameters.JcrPath;
-import org.hippoecm.hst.core.parameters.Parameter;
 import org.hippoecm.hst.core.parameters.ParametersInfo;
-
-import static com.authentic.util.Constants.COMPONENT_PARAMETER_MAP;
-import static com.authentic.util.Constants.REQUEST_ATTR_PARAM_INFO;
 
 /**
  * This is essentially just a stub for a component with no backend functionality.

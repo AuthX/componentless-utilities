@@ -1,6 +1,5 @@
 package com.authentic.util;
 
-import com.authentic.components.DocumentContentComponent;
 import com.google.common.base.Strings;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.parameters.Parameter;

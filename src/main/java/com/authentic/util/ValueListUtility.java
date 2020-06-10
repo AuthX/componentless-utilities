@@ -63,7 +63,7 @@ public class ValueListUtility {
     }
 
     public interface Info {
-        @Parameter(name = "valueLists", displayName = "Value Lists")
+        @Parameter(name = "valueLists", displayName = "Value Lists", hideInChannelManager = true)
         String getValueLists();
     }
 }

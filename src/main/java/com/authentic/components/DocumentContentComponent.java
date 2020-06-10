@@ -1,5 +1,7 @@
 package com.authentic.components;
 
+import com.authentic.util.ResourceBundleUtility;
+import com.authentic.util.ValueListUtility;
 import com.google.common.base.Strings;
 import org.hippoecm.hst.content.beans.manager.ObjectBeanManager;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
@@ -58,6 +60,8 @@ public class DocumentContentComponent extends CommonComponent {
 
         request.setAttribute(REQUEST_ATTR_DOCUMENT, bean);
         request.setModel(REQUEST_ATTR_DOCUMENT, bean);
+        ValueListUtility.addValueListsToModel(request, paramInfo);
+        ResourceBundleUtility.addResourceBundlesToModel(request, paramInfo);
     }
 
     @SuppressWarnings("unchecked")
@@ -88,7 +92,7 @@ public class DocumentContentComponent extends CommonComponent {
         return value instanceof String && !Strings.isNullOrEmpty((String) value);
     }
 
-    interface Info {
+    interface Info extends ResourceBundleUtility.Info, ValueListUtility.Info {
         @Parameter(name = "document", displayName = "Document")
         @JcrPath(
                 isRelative = true,

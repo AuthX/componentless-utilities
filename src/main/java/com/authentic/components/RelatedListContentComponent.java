@@ -11,9 +11,7 @@ import org.hippoecm.hst.core.request.HstRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.authentic.util.Constants.COMPONENT_PARAMETER_MAP;
 import static com.authentic.util.Constants.REQUEST_ATTR_DOCUMENT;
-import static com.authentic.util.Constants.REQUEST_ATTR_PARAM_INFO;
 
 /**
  * Extends the ListContentComponent to allow comparison queries against a document

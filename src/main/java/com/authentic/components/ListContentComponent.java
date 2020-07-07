@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import static com.authentic.util.Constants.COMPONENT_PARAMETER_MAP;
 import static com.authentic.util.Constants.REQUEST_ATTR_DOCUMENTS;
@@ -87,17 +88,21 @@ public class ListContentComponent extends BaseHstComponent {
         final HashMap<String, Object> paramMap;
         Set<Map.Entry<String, Object>> paramSet;
         try {
-            List<HippoBean> beans = new ArrayList<>();
             paramMap = (HashMap<String, Object>) request.getAttribute(COMPONENT_PARAMETER_MAP);
             paramSet = paramMap.entrySet();
+            TreeMap<String, HippoBean> keyBeanHolder = new TreeMap<>();
+
             paramSet.stream()
                     .filter(e -> e.getKey().matches("document[0-9?]")
                             && isDocumentPath(e.getValue()))
                     .forEach(e -> {
                         HippoBean bean = getBeanFromPath((String) e.getValue(), beanManager, root);
-                        if (bean != null)
-                            beans.add(bean);
+                        if (bean != null) {
+                            keyBeanHolder.put(e.getKey(), bean);
+                        }
                     });
+
+            List<HippoBean> beans = new ArrayList<>(keyBeanHolder.values());
 
             return helper.buildPageable(beans);
 

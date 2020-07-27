@@ -11,6 +11,7 @@ import org.onehippo.forge.selection.hst.contentbean.ValueListItem;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,14 +30,13 @@ public class ValueListUtility {
     public static ValueList getValueList(String path) {
         final HstRequestContext hstRequestContext = RequestContextProvider.get();
         final HippoBean siteContentBaseBean = hstRequestContext.getSiteContentBaseBean();
-        final String name = path.substring(path.lastIndexOf('/'));
         HippoBean bean = siteContentBaseBean.getBean(path);
         if (bean == null)
             bean = siteContentBaseBean.getParentBean().getBean(String.format("administration/value-lists/%s", path));
         if (bean == null)
             bean = siteContentBaseBean.getParentBean().getBean(path);
         if (bean != null)
-            return bean.getBean(name, ValueList.class);
+            return bean.getBean(".", ValueList.class);
         return null;
     }
 
@@ -46,7 +46,7 @@ public class ValueListUtility {
             return null;
 
         final List<ValueListItem> items = valueList.getItems();
-        Map<String, String> result = new HashMap<>();
+        Map<String, String> result = new LinkedHashMap<>();
         items.forEach(item -> result.put(item.getKey(), item.getLabel()));
 
         return result;

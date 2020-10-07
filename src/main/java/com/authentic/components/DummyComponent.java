@@ -21,6 +21,6 @@ public class DummyComponent extends BaseHstComponent {
         ResourceBundleUtility.addResourceBundlesToModel(request, paramInfo);
     }
 
-    interface Info extends ResourceBundleUtility.Info, ValueListUtility.Info {
+    protected interface Info extends ResourceBundleUtility.Info, ValueListUtility.Info {
     }
 }

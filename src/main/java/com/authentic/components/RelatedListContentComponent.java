@@ -78,7 +78,7 @@ public class RelatedListContentComponent extends ListContentComponent {
         }
     }
 
-    interface Info extends ListContentComponent.Info {
+    protected interface Info extends ListContentComponent.Info {
         /**
          * Specify the name of the field in the current document which we are going to compare.
          */

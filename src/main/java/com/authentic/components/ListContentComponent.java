@@ -173,7 +173,7 @@ public class ListContentComponent extends BaseHstComponent {
         // For implementation by child classes
     }
 
-    interface Info extends QueryHelper.Info, ResourceBundleUtility.Info, ValueListUtility.Info {
+    protected interface Info extends QueryHelper.Info, ResourceBundleUtility.Info, ValueListUtility.Info {
         /**
          * Allows a contributor to assign a path in the /content. If this parameter is set,
          * we will query that path for documents and turn them into a list assigned to the

@@ -65,7 +65,7 @@ public class DocumentContentComponent extends CommonComponent {
     }
 
     @SuppressWarnings("unchecked")
-    private void assignDocumentBeans(HstRequest request, HippoBean root) {
+    protected void assignDocumentBeans(HstRequest request, HippoBean root) {
         final ObjectBeanManager beanManager = request.getRequestContext().getObjectBeanManager();
         final HashMap<String, Object> paramMap;
         Set<Map.Entry<String, Object>> paramSet;
@@ -92,7 +92,7 @@ public class DocumentContentComponent extends CommonComponent {
         return value instanceof String && !Strings.isNullOrEmpty((String) value);
     }
 
-    interface Info extends ResourceBundleUtility.Info, ValueListUtility.Info {
+    protected interface Info extends ResourceBundleUtility.Info, ValueListUtility.Info {
         @Parameter(name = "document", displayName = "Document")
         @JcrPath(
                 isRelative = true,

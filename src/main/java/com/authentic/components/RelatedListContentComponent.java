@@ -1,22 +1,24 @@
 package com.authentic.components;
 
+import org.hippoecm.hst.configuration.components.DynamicComponentInfo;
+import org.hippoecm.hst.configuration.components.DynamicParameter;
 import org.hippoecm.hst.content.beans.query.HstQuery;
 import org.hippoecm.hst.content.beans.query.exceptions.FilterException;
 import org.hippoecm.hst.content.beans.query.filter.Filter;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstRequest;
-import org.hippoecm.hst.core.parameters.Parameter;
 import org.hippoecm.hst.core.parameters.ParametersInfo;
 import org.hippoecm.hst.core.request.HstRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.authentic.util.Constants.REQUEST_ATTR_DOCUMENT;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Extends the ListContentComponent to allow comparison queries against a document
  */
-@ParametersInfo(type= RelatedListContentComponent.Info.class)
+@ParametersInfo(type=DynamicComponentInfo.class)
 public class RelatedListContentComponent extends ListContentComponent {
     private static final Logger log = LoggerFactory.getLogger(RelatedListContentComponent.class);
 
@@ -28,9 +30,9 @@ public class RelatedListContentComponent extends ListContentComponent {
         if (contentBean == null)
             return;
 
-        final Info paramInfo = getComponentParametersInfo(request);
+        final Info paramInfo = getComponentlessInfo(Info.class);
         final String relatedField = paramInfo.getRelatedField();
-        final Object property = contentBean.getProperty(paramInfo.getField());
+        final Object property = contentBean.getSingleProperty(paramInfo.getField());
         final Filter baseFilter = query.createFilter();
 
         if (property instanceof String[]) {
@@ -78,17 +80,23 @@ public class RelatedListContentComponent extends ListContentComponent {
         }
     }
 
-    protected interface Info extends ListContentComponent.Info {
+    protected static class Info extends ListContentComponent.Info {
+        public Info(List<DynamicParameter> dynamicComponentParameters, Map<String, String> parameterValues) {
+            super(dynamicComponentParameters, parameterValues);
+        }
+
         /**
          * Specify the name of the field in the current document which we are going to compare.
          */
-        @Parameter(name = "field", displayName = "Field")
-        String getField();
+        public String getField() {
+            return getStringParameter("field");
+        }
 
         /**
          * Specifies the name of the field in the documents we are comparing against.
          */
-        @Parameter(name = "relatedField", displayName = "Related Field")
-        String getRelatedField();
+        public String getRelatedField() {
+            return getStringParameter("relatedField");
+        }
     }
 }

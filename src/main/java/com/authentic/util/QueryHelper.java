@@ -1,5 +1,6 @@
 package com.authentic.util;
 
+import com.authentic.components.ComponentlessInfo;
 import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.component.support.bean.BaseHstComponent;
 import org.hippoecm.hst.container.RequestContextProvider;
@@ -12,8 +13,6 @@ import org.hippoecm.hst.content.beans.query.filter.Filter;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.content.beans.standard.HippoBeanIterator;
 import org.hippoecm.hst.core.component.HstRequest;
-import org.hippoecm.hst.core.parameters.JcrPath;
-import org.hippoecm.hst.core.parameters.Parameter;
 import org.hippoecm.hst.core.request.HstRequestContext;
 import org.hippoecm.hst.util.SearchInputParsingUtils;
 import org.onehippo.cms7.essentials.components.paging.IterablePagination;
@@ -365,14 +364,15 @@ public class QueryHelper {
         return result.toString();
     }
 
-    public interface Info {
+    public interface Info extends ComponentlessInfo {
         /**
          * A default page size or limit to the number of results in the list. The default, 0,
          * is unlimited. This value would be overridden if the pageSizeParam below is set AND
          * it has been added to the request.
          */
-        @Parameter(name = "pageSize", displayName = "Page Size", defaultValue = "0", hideInChannelManager = true)
-        Integer getPageSize();
+        default Integer getPageSize() {
+            return getIntParameter("pageSize", 0);
+        }
 
         /**
          * The parameter name to look for in the request in order to change the current page size.
@@ -380,29 +380,33 @@ public class QueryHelper {
          * For example, if this parameter is "size" then we would check for "?size=X" in the request,
          * and if it exists then we would change the pageSize parameter above to X.
          */
-        @Parameter(name = "pageSizeParam", displayName = "Page Size Parameter", hideInChannelManager = true)
-        String getPageSizeParam();
+        default String getPageSizeParam() {
+            return getStringParameter("pageSizeParam");
+        }
 
         /**
          * Whether to order by asc or desc. Only those values will be accepted. If this value does NOT equal
          * "asc" or "desc" then it will be discarded and not ordered.
          */
-        @Parameter(name = "order", displayName = "Order", hideInChannelManager = true)
-        String getOrder();
+        default String getOrder() {
+            return getStringParameter("order");
+        }
 
         /**
          * A parameter name to use in the request for 'order' allowing the user to specify the order to sort by.
          * For example, if this is set to "order" then we will look for "?order=X" in the request. The value will
          * need to be asc or desc, or else will be discarded and no sorting will take place.
          */
-        @Parameter(name = "orderParam", displayName = "Order Parameter", hideInChannelManager = true)
-        String getOrderParam();
+        default String getOrderParam() {
+            return getStringParameter("orderParam");
+        }
 
         /**
          * The name of the field on which to apply ordering to sort.
          */
-        @Parameter(name = "orderField", displayName = "Order Field", hideInChannelManager = true)
-        String getOrderField();
+        default String getOrderField() {
+            return getStringParameter("orderField");
+        }
 
         /**
          * This allows us to set a request parameter that the user can use to change which field is being
@@ -410,24 +414,27 @@ public class QueryHelper {
          * the request. If X is set to a field name that does not exist, this will be discarded and no sorting
          * will take place.
          */
-        @Parameter(name = "orderFieldParam", displayName = "Order Field Parameter", hideInChannelManager = true)
-        String getOrderFieldParam();
+        default String getOrderFieldParam() {
+            return getStringParameter("orderFieldParam");
+        }
 
         /**
          * The name of the request parameter to use for pagination. If this is empty, the user will not be able to
          * change what page they are looking at. For example, if the value of this is "page" (the default)
          * then we will look for "?page=X" on the request.
          */
-        @Parameter(name = "pageNumberParam", displayName = "Page Number Parameter", defaultValue = "page", hideInChannelManager = true)
-        String getPageNumberParam();
+        default String getPageNumberParam() {
+            return getStringParameter("pageNumberParam", "page");
+        }
 
         /**
          * A comma-separated list of document types that we are looking for. If this is not set, we will create
          * a list of ALL document types. If this is set to, for example, "brxp:Article,brxp:BlogArticle" we will
          * create a list of ONLY BlogArticle and Article doctypes.
          */
-        @Parameter(name = "nodeTypes", displayName = "Supported Document Types", defaultValue = "brxp:basedocument")
-        String getNodeTypes();
+        default String getNodeTypes() {
+            return getStringParameter("nodeTypes", "brxp:basedocument");
+        }
 
         /**
          * This allows you to craft a JCR statement for querying, and add in optional user parameters.
@@ -464,7 +471,8 @@ public class QueryHelper {
          *      segments. This is probably a very advanced case.
          * - Note that user-supplied parameters are all filtered through the SearchInputParsingUtils to sanitize them.
          */
-        @Parameter(name = "filterParams", displayName = "Filter Parameters", hideInChannelManager = true)
-        String getFilterParams();
+        default String getFilterParams() {
+            return getStringParameter("filterParams");
+        }
     }
 }

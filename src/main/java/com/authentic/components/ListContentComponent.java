@@ -1,10 +1,9 @@
 package com.authentic.components;
 
 import com.authentic.util.QueryHelper;
-import com.authentic.util.ResourceBundleUtility;
-import com.authentic.util.ValueListUtility;
 import com.google.common.base.Strings;
-import org.hippoecm.hst.component.support.bean.BaseHstComponent;
+import org.hippoecm.hst.configuration.components.DynamicComponentInfo;
+import org.hippoecm.hst.configuration.components.DynamicParameter;
 import org.hippoecm.hst.content.beans.manager.ObjectBeanManager;
 import org.hippoecm.hst.content.beans.query.HstQuery;
 import org.hippoecm.hst.content.beans.query.exceptions.QueryException;
@@ -12,7 +11,6 @@ import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.content.beans.standard.HippoBeanIterator;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
-import org.hippoecm.hst.core.parameters.Parameter;
 import org.hippoecm.hst.core.parameters.ParametersInfo;
 import org.hippoecm.hst.core.request.HstRequestContext;
 import org.onehippo.cms7.essentials.components.paging.IterablePagination;
@@ -29,7 +27,6 @@ import java.util.TreeMap;
 
 import static com.authentic.util.Constants.COMPONENT_PARAMETER_MAP;
 import static com.authentic.util.Constants.REQUEST_ATTR_DOCUMENTS;
-import static com.authentic.util.Constants.REQUEST_ATTR_PAGEABLE;
 import static com.authentic.util.QueryHelper.getBeanFromPath;
 
 /**
@@ -38,8 +35,8 @@ import static com.authentic.util.QueryHelper.getBeanFromPath;
  * This has a lot of configuration items, most of which are hidden from normal contributors
  * to allow for creating multiple "virtual" components in the console using one logical Java class.
  */
-@ParametersInfo(type=ListContentComponent.Info.class)
-public class ListContentComponent extends BaseHstComponent {
+@ParametersInfo(type=DynamicComponentInfo.class)
+public class ListContentComponent extends ComponentlessComponent {
     private static final Logger log = LoggerFactory.getLogger(ListContentComponent.class);
     private static final String NODETYPE_SEPARATOR = ",";
 
@@ -53,11 +50,11 @@ public class ListContentComponent extends BaseHstComponent {
     @Override
     public void doBeforeRender(HstRequest request, HstResponse response) {
         super.doBeforeRender(request, response);
-        final Info paramInfo = getComponentParametersInfo(request);
+        final Info paramInfo = getComponentlessInfo(Info.class);
         final HstRequestContext context = request.getRequestContext();
         final HippoBean root = context.getSiteContentBaseBean();
 
-        IterablePagination<HippoBean> pagination ;
+        IterablePagination<HippoBean> pagination;
         final QueryHelper helper = new QueryHelper(request, this, paramInfo);
 
         HippoBean scope;
@@ -78,9 +75,6 @@ public class ListContentComponent extends BaseHstComponent {
             request.setAttribute(REQUEST_ATTR_PAGEABLE, pagination);
             request.setModel(REQUEST_ATTR_DOCUMENTS, pagination.getItems());
         }
-
-        ValueListUtility.addValueListsToModel(request, paramInfo);
-        ResourceBundleUtility.addResourceBundlesToModel(request, paramInfo);
     }
 
     private IterablePagination<HippoBean> getBeansFromParamInfo(QueryHelper helper, HstRequest request, HippoBean root, HstRequestContext context) {
@@ -173,13 +167,18 @@ public class ListContentComponent extends BaseHstComponent {
         // For implementation by child classes
     }
 
-    protected interface Info extends QueryHelper.Info, ResourceBundleUtility.Info, ValueListUtility.Info {
+    protected static class Info extends ComponentlessInfoImpl implements QueryHelper.Info {
+        public Info(List<DynamicParameter> dynamicComponentParameters, Map<String, String> parameterValues) {
+            super(dynamicComponentParameters, parameterValues);
+        }
+
         /**
          * Allows a contributor to assign a path in the /content. If this parameter is set,
          * we will query that path for documents and turn them into a list assigned to the
          * request.
          */
-        @Parameter(name = "path", displayName = "Path")
-        String getPath();
+        public String getPath() {
+            return getStringParameter("path");
+        }
     }
 }

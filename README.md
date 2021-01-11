@@ -1,10 +1,10 @@
 # componentless components 
 The Authentic componentless library provides component code and utility code to simplify creating Hippo projects.
-   
+
+Starting with V4, intended for use with v14.3 or greater of Bloomreach, this library is for use with Dynamic Components rather than the Authentic Componentless library.
+
 ## Installation
 Installing the componentless library plugin into a Hippo CMS project requires only modifying the pom.xml of the site module to include the library in the maven build.
-
-To get the most out of this project, you should also install [Beanless](http://github.com/authx/beanless)
 
 To use the frontend utilities, you must also modify your project's web.xml. Simply look for `org.hippoecm.hst.servlet.HstFreemarkerServlet` in web.xml with `com.authentic.util.AddedValueFreemarkerServlet`
 
@@ -25,39 +25,7 @@ There are four available component classes that can achieve various effects thro
 
 **Component Setup**
 
-In order to configure:
-* create a node of type 'hst:containeritemcomponent' in the component catalog
-* add required hst:containeritemcomponent fields, such as label, template, xtype, componentClassName (choose from available component classes below)
-* add a node of type 'hst:abstractcomponent' to the hst:containeritemcomponent for each parameter desired
-* for each hst:abstractcomponent node, add the 'hippostd:relaxed' mixin
-
-On each hst:abstractcomponent node, add the following properties:
-
-* defaultValue - String - optional - doesn't actually do anything, don't bother using this
-* description - String - optional - just a useful description
-* label - String - The label the content contributor sees
-* name - String - The name by which the property will be accessed in the frontend
-* hiddenInChannelManager - Boolean - default 'true' - determines if a content contributor can actually see and modify this field
-* groupLabel - String - optional - A grouping label under which this field will display
-* required - Boolean - default 'false' - Whether the content contributor must enter a value into this field
-* type - String - default 'STRING' - Must be one of: [, STRING, VALUE_FROM_LIST, NUMBER, DATE, DOCUMENT, JCR_PATH, COLOR]
-    * BOOLEAN - Causes this parameter to display as a checkbox
-        * value must be 'on' or 'off'
-    * STRING - Causes this parameter to display as a simple text box.
-    * VALUE_FROM_LIST - Causes this parameter to display as a dropdown. When using this, you must also add the following properties to the node:
-        * dropDownListDisplayValyes - Array of String - The labels for the values in the dropdown
-        * dropDownListValues - Array of String - Teh values available in the dropdown
-        * See below for example
-    * NUMBER - Causes this parameter to display as a number field
-    * DATE - Causes this parameter to display as a date field
-    * DOCUMENT - Causes this parameter to display as a dropdown list of matching documents. Requires the following additional properties:
-        * docType - String - the document types to display in this parameter
-    * JCR_PATH - Causes this parameter to display as a document picker. You can add the following additional properties:
-        * pickerConfiguration - String - the picker configuration path, usually 'cms-pickers/documents'
-        * pickerInitialPath - String - the initial JCR path for the picker to start on
-        * pickerSelectableNodeTypes - Array of String - an array of document types that this picker will allow to be selected
-    * COLOR - Causes this parameter to display as a color picker
-* value - String - optional  - Sets the value for this property, only useful in cases where 'hiddenInChannelManager' is true  
+Create dybamic components in the catalog as described in the [Bloomreach documentation](https://documentation.bloomreach.com/14/library/concepts/component-development/dynamic-components.html).
 
 **Usage as non-catalog components**
 
@@ -70,9 +38,17 @@ hst:parametervalues: ["blog-posts/post", "on"]
 
 **Frontend Usage**
 
-Each component will assign a 'cparam' property, and potentially other properties depending upon the class.
+Each component will assign a 'componentParameterMap' property, and potentially other properties depending upon the class.
 
-Each parameter specified in the console will be available by it's "name" property in the cparam map. For example, if you add a parameter named "heading" then Freemarker will be able to access it by using `${cparam.heading}`
+Each parameter's raw value be available by it's "name" property in the cparam map. For example, if you add a parameter named "heading" then Freemarker will be able to access it by using `${cparam.heading}`
+
+Each parameter will also be accessible, parsed by the specified component, directly. For example, `${document}`
+
+#### Resource bundles and value lists
+
+Every component made with one of the below classes can automatically include resource bundles or value lists. This is primarily useful for SPA++ or EditConnect, as a simple method of retrieving these values.
+
+In the component, simply add a string parameter named 'resourceBundles' or a string parameter named 'valueLists' These parameters should be a comma-separated list of identifiers. Each of those identifiers will be processed and the resulting value list or resource bundle added to the request models.
 
 #### Dummy Component
 componentClassName: com.authentic.components.DummyComponent
@@ -82,16 +58,17 @@ The Dummy Component has no functionality. It is useful in instances where a cont
 #### Document Content Component
 componentClassName: com.authentic.components.DocumentContentComponent
 
-Assigns a document to the request. This is used in two main scenarios: When a document will be selected based on the relativeContentPath set on the sitemap, or when the content contributor should specify a document.
+Assigns one or more documents to the request. This is used in two main scenarios: When a document will be selected based on the relativeContentPath set on the sitemap, or when the content contributor should specify a document.
 
 Requires the following parameters to be added:
 
-* _required_ - Must be of type 'BOOLEAN' - If set to 'on' then any time this component is unable to load a document, the user will be loaded to a 404 page
-* _document_ - Optional - Must be of type 'JCR_PATH' If this parameter does not exist, the document content path will look for a relativeContentPath document in the sitemap
+* _required_ - Must be of type 'BOOLEAN' - If set to 'on' then any time this component is unable to load a document as specified in the next parameter, the user will be loaded to a 404 page
+* _document_ - Optional - Must be a valid hst:jcrpath parameter as specified by the Bloomreach dynamic components documentation. 
 
 Assigns the following to the request:
 
-* _document_ - The document 
+* _document_ - The document
+* \* - Any parameter which is a hst:jcrpath will also be parsed as a document.
 
 #### List Content Component
 componentClassName: com.authentic.components.ListContentComponent
@@ -195,3 +172,26 @@ Just gets a value list.
     ${key} = ${label}
 </#list>
 ```
+
+## Migration
+
+### Migration from v3 to v4
+
+With the upgrade from version 3 of this utility to version 4, we are moving from using Componentless as the underlying technology to using Bloomreach Dynamic Components. As such, you MUST be on version 14.3 or higher of Bloomreach.
+
+Included in this repository is `dynamic-component-migration.groovy` which is a groovy script to handle the migration for you. This script can be run in the CMS as an updater script. There are a few caveats:
+
+**Non-Catalog Components**
+
+IF you have components which are NOT in the catalog, but MUST be editable by users.. Dynamic Components must exist in the catalog in order for them to be editable in channel manager. The easy method for handling this:
+
+- Find an instance of the component and export it as YAML
+- Import that instance into the catalog.
+- Add the hippostd:relaxed mixin to the catalog component.
+- Add the 'hiddenInChannelManager' parameter as a boolean and set to true so that it will not appear in channel manager.
+
+EVERY component that must be editable in the CMS must exist in the catalog. Doing it this way will allow the migration script to turn it automatically into a hidden dynamic component.
+
+**Look out for standard components**
+
+This migration script assumes that all components are dynamic. As such, non-dynamic components will be turned into dynamic components. Keep a backup of your catalog to add them back easily.

@@ -3,14 +3,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.authentic</groupId>
 	<artifactId>authentic-componentless-utilities</artifactId>
-	<version>3.0.7</version>
+	<version>4.0.0</version>
 	<name>authentic componentless utilities</name>
 	<description>Extends the beanless capability with components that can handle many scenarios without writing any code, as well as providing some utilities for the frontend to use.</description>
 
 
 	<properties>
-		<hst.version>13.0.0</hst.version>
-		<hippo.version>13.0.0</hippo.version>
+		<hst.version>14.4.0</hst.version>
+		<hippo.version>14.4.0</hippo.version>
 	</properties>
 
 	<distributionManagement>
@@ -42,7 +42,6 @@
 		</repository>
 	</repositories>
 
-
 	<dependencies>
 		<dependency>
 			<groupId>javax.jcr</groupId>
@@ -72,7 +71,6 @@
 			<groupId>org.onehippo.cms7</groupId>
 			<artifactId>hippo-cms7-commons</artifactId>
 			<version>${hippo.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.onehippo.cms7.hst</groupId>

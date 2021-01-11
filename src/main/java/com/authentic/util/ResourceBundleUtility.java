@@ -1,8 +1,8 @@
 package com.authentic.util;
 
+import com.authentic.components.ComponentlessInfo;
 import com.google.common.base.Strings;
 import org.hippoecm.hst.core.component.HstRequest;
-import org.hippoecm.hst.core.parameters.Parameter;
 import org.hippoecm.hst.resourcebundle.ResourceBundleUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +50,9 @@ public class ResourceBundleUtility {
         return null;
     }
 
-    public interface Info {
-        @Parameter(name = "resourceBundles", displayName = "Resource Bundles", hideInChannelManager = true)
-        String getResourceBundles();
+    public interface Info extends ComponentlessInfo {
+        default String getResourceBundles() {
+            return getStringParameter("resourceBundles");
+        }
     }
 }

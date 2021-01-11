@@ -1,10 +1,10 @@
 package com.authentic.util;
 
+import com.authentic.components.ComponentlessInfo;
 import com.google.common.base.Strings;
 import org.hippoecm.hst.container.RequestContextProvider;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstRequest;
-import org.hippoecm.hst.core.parameters.Parameter;
 import org.hippoecm.hst.core.request.HstRequestContext;
 import org.onehippo.forge.selection.hst.contentbean.ValueList;
 import org.onehippo.forge.selection.hst.contentbean.ValueListItem;
@@ -62,8 +62,9 @@ public class ValueListUtility {
         return maps;
     }
 
-    public interface Info {
-        @Parameter(name = "valueLists", displayName = "Value Lists", hideInChannelManager = true)
-        String getValueLists();
+    public interface Info extends ComponentlessInfo {
+        default String getValueLists() {
+            return getStringParameter("valueLists");
+        }
     }
 }

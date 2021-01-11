@@ -1,35 +1,28 @@
 package com.authentic.components;
 
-import com.authentic.util.ResourceBundleUtility;
-import com.authentic.util.ValueListUtility;
 import com.google.common.base.Strings;
+import org.hippoecm.hst.configuration.components.DynamicComponentInfo;
+import org.hippoecm.hst.configuration.components.DynamicParameter;
+import org.hippoecm.hst.configuration.components.DynamicParameterConfig;
 import org.hippoecm.hst.content.beans.manager.ObjectBeanManager;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
-import org.hippoecm.hst.core.parameters.JcrPath;
-import org.hippoecm.hst.core.parameters.Parameter;
 import org.hippoecm.hst.core.parameters.ParametersInfo;
 import org.hippoecm.hst.core.request.HstRequestContext;
-import org.onehippo.cms7.essentials.components.CommonComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import static com.authentic.util.Constants.COMPONENT_PARAMETER_MAP;
 import static com.authentic.util.QueryHelper.getBeanFromPath;
 
 /**
  * A generic class which serves as the functional part for any component that is
  * only intended to assign a single document to the request.
  */
-@ParametersInfo(type=DocumentContentComponent.Info.class)
-public class DocumentContentComponent extends CommonComponent {
-    private static final Logger log = LoggerFactory.getLogger(DocumentContentComponent.class);
-
+@ParametersInfo(type = DynamicComponentInfo.class)
+public class DocumentContentComponent extends ComponentlessComponent {
     /**
      * @param request HstRequest
      * @param response
@@ -39,68 +32,76 @@ public class DocumentContentComponent extends CommonComponent {
      * param info, it redirects to a 404 page. Otherwise, it assigns null to the request.
      */
     @Override
-    public void doBeforeRender(HstRequest request, HstResponse response) {
+    public void doBeforeRender(final HstRequest request, final HstResponse response) {
         super.doBeforeRender(request, response);
-        final Info paramInfo = getComponentParametersInfo(request);
-        final String paramDocumentPath = paramInfo.getDocument();
         final HstRequestContext context = request.getRequestContext();
         final HippoBean root = context.getSiteContentBaseBean();
-        HippoBean bean;
+        final Info componentlessInfo = getComponentlessInfo(Info.class);
 
-        assignDocumentBeans(request, root);
-        if (!Strings.isNullOrEmpty(paramDocumentPath)) {
-            bean = root.getBean(paramDocumentPath);
-        } else {
-            bean = context.getContentBean();
+        assignDocumentBeans(request, componentlessInfo.getDocumentParams(), root);
+
+        // Check for if a document is required
+        if (componentlessInfo.isRequired()) {
+            HippoBean bean;
+            if (Strings.isNullOrEmpty(componentlessInfo.getDocument())) {
+                bean = context.getContentBean();
+            } else {
+                bean = root.getBean(componentlessInfo.getDocument());
+            }
+            if (bean == null) {
+                pageNotFound(response);
+            }
         }
-
-        if (bean == null && paramInfo.isRequired() && !request.getRequestContext().isCmsRequest()) {
-            pageNotFound(response);
-        }
-
-        request.setAttribute(REQUEST_ATTR_DOCUMENT, bean);
-        request.setModel(REQUEST_ATTR_DOCUMENT, bean);
-        ValueListUtility.addValueListsToModel(request, paramInfo);
-        ResourceBundleUtility.addResourceBundlesToModel(request, paramInfo);
     }
 
-    @SuppressWarnings("unchecked")
-    protected void assignDocumentBeans(HstRequest request, HippoBean root) {
+    protected void assignDocumentBeans(final HstRequest request, final Map<String, String> parameterValues, final HippoBean root) {
         final ObjectBeanManager beanManager = request.getRequestContext().getObjectBeanManager();
-        final HashMap<String, Object> paramMap;
-        Set<Map.Entry<String, Object>> paramSet;
-        try {
-            paramMap = (HashMap<String, Object>) request.getAttribute(COMPONENT_PARAMETER_MAP);
-            paramSet = paramMap.entrySet();
-            paramSet.stream()
-                    .filter(e -> !e.getKey().equals(REQUEST_ATTR_DOCUMENT)
-                            && e.getKey().endsWith("Document")
-                            && isDocumentPath(e.getValue()))
-                    .forEach(e -> {
-                        HippoBean bean = getBeanFromPath((String) e.getValue(), beanManager, root);
-                        if (bean != null) {
-                            request.setModel(e.getKey(), bean);
-                            request.setAttribute(e.getKey(), bean);
-                        }
-                    });
-        } catch (ClassCastException e) {
-            log.error("cparam is not a parameter map. This should not happen.", e);
+        parameterValues.keySet()
+            .forEach(key -> {
+                HippoBean bean = getBeanFromPath(parameterValues.get(key), beanManager, root);
+                if (bean != null) {
+                    request.setModel(key, bean);
+                    request.setAttribute(key, bean);
+                }
+            });
+    }
+
+    static public class Info extends ComponentlessInfoImpl {
+        public Info(List<DynamicParameter> dynamicComponentParameters, Map<String, String> parameterValues) {
+            super(dynamicComponentParameters, parameterValues);
         }
-    }
 
-    private boolean isDocumentPath(Object value) {
-        return value instanceof String && !Strings.isNullOrEmpty((String) value);
-    }
+        public Map<String, String> getDocumentParams() {
+            Map<String, String> result = new HashMap<>();
 
-    protected interface Info extends ResourceBundleUtility.Info, ValueListUtility.Info {
-        @Parameter(name = "document", displayName = "Document")
-        @JcrPath(
-                isRelative = true,
-                pickerSelectableNodeTypes = {"hippo:document"}
-        )
-        String getDocument();
+            // For backwards compatibility, we first add anything with "document" in the name
+            getMap().forEach((key, value) -> {
+                if ((key.startsWith("document") || key.endsWith("Document")) && isDocumentPath(value))
+                    result.put(key, value);
+            });
 
-        @Parameter(name = "required", displayName = "Required?", hideInChannelManager = true, defaultValue = "false")
-        Boolean isRequired();
+            // Check for parameters that are of type JCR path; if we get a value here then override the parameterValue
+            getParameters().forEach((name, dynamicParameter) -> {
+                final DynamicParameterConfig config = dynamicParameter.getComponentParameterConfig();
+                if (config != null && config.getType() == DynamicParameterConfig.Type.JCR_PATH) {
+                    if (getMap().containsKey(name))
+                        result.put(name, getMap().get(name));
+                }
+            });
+
+            return result;
+        }
+
+        private boolean isDocumentPath(Object value) {
+            return value instanceof String && !Strings.isNullOrEmpty((String) value);
+        }
+
+        public String getDocument() {
+            return getStringParameter("document");
+        }
+
+        public boolean isRequired() {
+            return getBoolParameter("required", false);
+        }
     }
 }

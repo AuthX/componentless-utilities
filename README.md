@@ -195,3 +195,7 @@ EVERY component that must be editable in the CMS must exist in the catalog. Doin
 **Look out for standard components**
 
 This migration script assumes that all components are dynamic. As such, non-dynamic components will be turned into dynamic components. Keep a backup of your catalog to add them back easily.
+
+**Migrating Workspace**
+
+The migration script above is intended to be run locally so you can migrate catalog components and instances. A second script, `dynamic-component-workspace-migration.groovy` is provided which is for running in upper environments to migrate managed content.

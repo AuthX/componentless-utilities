@@ -54,7 +54,7 @@ public class ValueListUtility {
 
     public static Map<String, Map<String, String>> getValueListMaps(List<String> lists) {
         Map<String, Map<String, String>> maps = new HashMap<>();
-        lists.parallelStream().forEach(list -> {
+        lists.stream().forEach(list -> {
             Map<String, String> valueListMap = getValueListMap(list);
             if (valueListMap != null)
                 maps.put(list, valueListMap);

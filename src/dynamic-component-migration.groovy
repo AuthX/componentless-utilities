@@ -140,9 +140,10 @@ class UpdaterTemplate extends BaseNodeUpdateVisitor {
         String[] fieldGroups = groups.keySet().toArray(String[].class)
         componentNode.setProperty("hst:fieldgroups", fieldGroups)
         for (String groupName : fieldGroups) {
+            final String hstGroupName = "hst:fieldgroups.${groupName}"
             def fields = groups.get(groupName)
             String[] fieldNames = fields.toArray(String[].class)
-            componentNode.setProperty(groupName, fieldNames)
+            componentNode.setProperty(hstGroupName, fieldNames)
         }
     }
 

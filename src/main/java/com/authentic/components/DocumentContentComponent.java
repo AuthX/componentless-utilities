@@ -62,6 +62,10 @@ public class DocumentContentComponent extends ComponentlessComponent {
                 if (bean != null) {
                     request.setModel(key, bean);
                     request.setAttribute(key, bean);
+                } else {
+                    // Don't assign empty bean strings
+                    request.removeModel(key);
+                    request.removeAttribute(key);
                 }
             });
     }

@@ -168,8 +168,8 @@ public class ListContentComponent extends ComponentlessComponent {
     }
 
     protected static class Info extends ComponentlessInfoImpl implements QueryHelper.Info {
-        public Info(List<DynamicParameter> dynamicComponentParameters, Map<String, String> parameterValues) {
-            super(dynamicComponentParameters, parameterValues);
+        public Info(List<DynamicParameter> dynamicComponentParameters, Map<String, String> parameterValues, Map<String, String> localParameters) {
+            super(dynamicComponentParameters, parameterValues, localParameters);
         }
 
         /**

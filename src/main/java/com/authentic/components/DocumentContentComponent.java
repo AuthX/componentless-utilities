@@ -71,8 +71,8 @@ public class DocumentContentComponent extends ComponentlessComponent {
     }
 
     static public class Info extends ComponentlessInfoImpl {
-        public Info(List<DynamicParameter> dynamicComponentParameters, Map<String, String> parameterValues) {
-            super(dynamicComponentParameters, parameterValues);
+        public Info(List<DynamicParameter> dynamicComponentParameters, Map<String, String> parameterValues, Map<String, String> localParameters) {
+            super(dynamicComponentParameters, parameterValues, localParameters);
         }
 
         public Map<String, String> getDocumentParams() {

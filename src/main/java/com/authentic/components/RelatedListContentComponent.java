@@ -81,8 +81,8 @@ public class RelatedListContentComponent extends ListContentComponent {
     }
 
     protected static class Info extends ListContentComponent.Info {
-        public Info(List<DynamicParameter> dynamicComponentParameters, Map<String, String> parameterValues) {
-            super(dynamicComponentParameters, parameterValues);
+        public Info(List<DynamicParameter> dynamicComponentParameters, Map<String, String> parameterValues, Map<String, String> localParameters) {
+            super(dynamicComponentParameters, parameterValues, localParameters);
         }
 
         /**

@@ -29,25 +29,25 @@ public class ComponentlessComponent extends CommonComponent {
         final DynamicComponentInfo paramInfo = getComponentParametersInfo(request);
         dynamicParameters = paramInfo.getDynamicComponentParameters();
         parameterValues = this.getComponentParameters();
-        ComponentlessInfoImpl info = new ComponentlessInfoImpl(dynamicParameters, parameterValues);
+        ComponentlessInfoImpl info = new ComponentlessInfoImpl(dynamicParameters, parameterValues, getComponentLocalParameters());
 
-        parameterValues.forEach((name, value) -> {
+        info.getMap().forEach((name, value) -> {
             if (!Strings.isNullOrEmpty(value)) {
                 request.setModel(name, value);
                 request.setAttribute(name, value);
             }
         });
 
-        request.setAttribute(COMPONENT_PARAMETER_MAP, parameterValues);
-        request.setModel(COMPONENT_PARAMETER_MAP, parameterValues);
+        request.setAttribute(COMPONENT_PARAMETER_MAP, info.getMap());
+        request.setModel(COMPONENT_PARAMETER_MAP, info.getMap());
         ValueListUtility.addValueListsToModel(request, info);
         ResourceBundleUtility.addResourceBundlesToModel(request, info);
     }
 
     protected <T extends ComponentlessInfo> T getComponentlessInfo(Class<T> clazz) {
         try {
-            final Constructor<T> construct = clazz.getConstructor(List.class, Map.class);
-            return construct.newInstance(dynamicParameters, parameterValues);
+            final Constructor<T> construct = clazz.getConstructor(List.class, Map.class, Map.class);
+            return construct.newInstance(dynamicParameters, parameterValues, getComponentLocalParameters());
         } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
             log.error("Unable to create a component info instance", e);
         }

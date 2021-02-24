@@ -32,6 +32,8 @@ public class ValueListUtility {
         final HippoBean siteContentBaseBean = hstRequestContext.getSiteContentBaseBean();
         HippoBean bean = siteContentBaseBean.getBean(path);
         if (bean == null)
+            bean = siteContentBaseBean.getBean(String.format("value-lists/%s", path.toLowerCase()));
+        if (bean == null)
             bean = siteContentBaseBean.getParentBean().getBean(String.format("administration/value-lists/%s", path));
         if (bean == null)
             bean = siteContentBaseBean.getParentBean().getBean(path);

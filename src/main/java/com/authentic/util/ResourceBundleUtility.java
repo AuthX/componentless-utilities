@@ -52,7 +52,7 @@ public class ResourceBundleUtility {
     }
 
     public interface Info {
-        @Parameter(name = "resourceBundles", displayName = "resourceBundles")
+        @Parameter(name = "resourceBundles", displayName = "Resource Bundles")
         String getResourceBundles();
     }
 }

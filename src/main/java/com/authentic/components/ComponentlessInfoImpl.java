@@ -44,4 +44,14 @@ public class ComponentlessInfoImpl implements ComponentlessInfo, ResourceBundleU
     public Map<String, DynamicParameter> getParameters() {
         return parameterMap;
     }
+
+    @Override
+    public String getValueLists() {
+        return getStringParameter("valueLists");
+    }
+
+    @Override
+    public String getResourceBundles() {
+        return getStringParameter("resourceBundles");
+    }
 }

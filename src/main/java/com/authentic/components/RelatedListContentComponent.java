@@ -30,7 +30,7 @@ public class RelatedListContentComponent extends ListContentComponent {
         if (contentBean == null)
             return;
 
-        final Info paramInfo = getComponentlessInfo(Info.class);
+        final Info paramInfo = getComponentlessInfo(Info.class, request);
         final String relatedField = paramInfo.getRelatedField();
         final Object property = contentBean.getSingleProperty(paramInfo.getField());
         final Filter baseFilter = query.createFilter();
@@ -81,8 +81,8 @@ public class RelatedListContentComponent extends ListContentComponent {
     }
 
     protected static class Info extends ListContentComponent.Info {
-        public Info(List<DynamicParameter> dynamicComponentParameters, Map<String, String> parameterValues, Map<String, String> localParameters) {
-            super(dynamicComponentParameters, parameterValues, localParameters);
+        public Info(List<DynamicParameter> dynamicComponentParameters, Map<String, String> parameterValues, Map<String, String> localParameters, DynamicComponentInfo proxyParametersInfo) {
+            super(dynamicComponentParameters, parameterValues, localParameters, proxyParametersInfo);
         }
 
         /**

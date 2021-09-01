@@ -36,7 +36,7 @@ public class DocumentContentComponent extends ComponentlessComponent {
         super.doBeforeRender(request, response);
         final HstRequestContext context = request.getRequestContext();
         final HippoBean root = context.getSiteContentBaseBean();
-        final Info componentlessInfo = getComponentlessInfo(Info.class);
+        final Info componentlessInfo = getComponentlessInfo(Info.class, request);
 
         assignDocumentBeans(request, componentlessInfo.getDocumentParams(), root);
 
@@ -71,8 +71,8 @@ public class DocumentContentComponent extends ComponentlessComponent {
     }
 
     static public class Info extends ComponentlessInfoImpl {
-        public Info(List<DynamicParameter> dynamicComponentParameters, Map<String, String> parameterValues, Map<String, String> localParameters) {
-            super(dynamicComponentParameters, parameterValues, localParameters);
+        public Info(List<DynamicParameter> dynamicComponentParameters, Map<String, String> parameterValues, Map<String, String> localParameters, DynamicComponentInfo proxyParametersInfo) {
+            super(dynamicComponentParameters, parameterValues, localParameters, proxyParametersInfo);
         }
 
         public Map<String, String> getDocumentParams() {

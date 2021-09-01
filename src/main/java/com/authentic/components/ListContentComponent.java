@@ -50,7 +50,7 @@ public class ListContentComponent extends ComponentlessComponent {
     @Override
     public void doBeforeRender(HstRequest request, HstResponse response) {
         super.doBeforeRender(request, response);
-        final Info paramInfo = getComponentlessInfo(Info.class);
+        final Info paramInfo = getComponentlessInfo(Info.class, request);
         final HstRequestContext context = request.getRequestContext();
         final HippoBean root = context.getSiteContentBaseBean();
 
@@ -168,8 +168,8 @@ public class ListContentComponent extends ComponentlessComponent {
     }
 
     protected static class Info extends ComponentlessInfoImpl implements QueryHelper.Info {
-        public Info(List<DynamicParameter> dynamicComponentParameters, Map<String, String> parameterValues, Map<String, String> localParameters) {
-            super(dynamicComponentParameters, parameterValues, localParameters);
+        public Info(List<DynamicParameter> dynamicComponentParameters, Map<String, String> parameterValues, Map<String, String> localParameters, DynamicComponentInfo proxyParametersInfo) {
+            super(dynamicComponentParameters, parameterValues, localParameters, proxyParametersInfo);
         }
 
         /**

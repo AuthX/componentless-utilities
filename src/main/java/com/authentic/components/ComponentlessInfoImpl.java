@@ -33,7 +33,6 @@ public class ComponentlessInfoImpl implements ComponentlessInfo, ResourceBundleU
                 map.put(name, parameter.getDefaultValue());
         });
 
-        // TODO ALBERTO
         for (DynamicParameter param: dynamicComponentParameters) {
 
             // do not use BaseHstComponent#getComponentParameter since this does not take 'targeting' neither
@@ -45,8 +44,11 @@ public class ComponentlessInfoImpl implements ComponentlessInfo, ResourceBundleU
                 continue;
             }
             if (o instanceof String) {
-                log.info("override parameter '{}' with targeting value '{}'", param.getName(), (String) o);
+                log.debug("override parameter '{}' with targeting value '{}'", param.getName(), (String) o);
                 map.put(param.getName(), (String) o);
+            } else if (o instanceof Boolean) {
+                log.debug("override parameter '{}' with targeting value '{}'", param.getName(), ((Boolean)o) ? "on" : "off");
+                map.put(param.getName(), ((Boolean)o) ? "on" : "off");
             } else {
                 // never expected actually
                 log.warn("Unexpected value type for jcr path param '{}'. Type was '{}', but String is expected",

@@ -43,6 +43,16 @@ public class ValueListUtility {
             bean = siteContentBaseBean.getParentBean().getBean(String.format("administration/value-lists/%s", path));
         if (bean == null)
             bean = siteContentBaseBean.getParentBean().getBean(path);
+        if (bean == null) {
+            if (hstRequestContext.getResolvedMount() != null &&
+                    hstRequestContext.getResolvedMount().getMount() != null &&
+                    hstRequestContext.getResolvedMount().getMount().getHstSite() != null) {
+
+                String siteName = hstRequestContext.getResolvedMount().getMount().getHstSite().getName();
+                bean = siteContentBaseBean.getBean(String.format("%s/value-lists/%s", siteName, path.toLowerCase()));
+            }
+        }
+
         if (bean != null)
             return bean.getBean(".", ValueList.class);
         return null;

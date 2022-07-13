@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.authentic</groupId>
 	<artifactId>authentic-componentless-utilities</artifactId>
-	<version>4.0.5</version>
+	<version>4.0.6</version>
 	<name>authentic componentless utilities</name>
 	<description>Extends the beanless capability with components that can handle many scenarios without writing any code, as well as providing some utilities for the frontend to use.</description>
 

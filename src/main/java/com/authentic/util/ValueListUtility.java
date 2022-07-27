@@ -2,11 +2,13 @@ package com.authentic.util;
 
 import com.authentic.components.ComponentlessInfo;
 import com.google.common.base.Strings;
+import org.hippoecm.hst.configuration.hosting.Mount;
 import org.hippoecm.hst.container.RequestContextProvider;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.parameters.Parameter;
 import org.hippoecm.hst.core.request.HstRequestContext;
+import org.hippoecm.hst.core.request.ResolvedMount;
 import org.hippoecm.hst.util.HstResponseUtils;
 import org.onehippo.forge.selection.hst.contentbean.ValueList;
 import org.onehippo.forge.selection.hst.contentbean.ValueListItem;
@@ -44,12 +46,13 @@ public class ValueListUtility {
         if (bean == null)
             bean = siteContentBaseBean.getParentBean().getBean(path);
         if (bean == null) {
-            if (hstRequestContext.getResolvedMount() != null &&
-                    hstRequestContext.getResolvedMount().getMount() != null &&
-                    hstRequestContext.getResolvedMount().getMount().getHstSite() != null) {
-
-                String siteName = hstRequestContext.getResolvedMount().getMount().getHstSite().getName();
-                bean = siteContentBaseBean.getBean(String.format("%s/value-lists/%s", siteName, path.toLowerCase()));
+            ResolvedMount resolvedMount = hstRequestContext.getResolvedMount();
+            if (resolvedMount != null && resolvedMount.getMount() != null) {
+                Mount mount = resolvedMount.getMount();
+                bean = getValueListByMount(mount, siteContentBaseBean, path);
+                if (bean == null) {
+                    bean = getValueListByMount(mount.getParent(), siteContentBaseBean, path);
+                }
             }
         }
 
@@ -83,5 +86,13 @@ public class ValueListUtility {
     public interface Info {
         @Parameter(name = "valueLists", displayName = "Value Lists")
         String getValueLists();
+    }
+
+    private static HippoBean getValueListByMount(Mount mount, HippoBean siteContentBaseBean, String path) {
+        if (mount != null && mount.getHstSite() != null) {
+            String siteName = mount.getHstSite().getName();
+            return siteContentBaseBean.getBean(String.format("%s/value-lists/%s", siteName, path.toLowerCase()));
+        }
+        return null;
     }
 }
